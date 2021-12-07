@@ -20,8 +20,12 @@
  *    console.log(r.height);      // => 20
  *    console.log(r.getArea());   // => 200
  */
-function Rectangle(/* width, height */) {
-  throw new Error('Not implemented');
+function Rectangle(width, height) {
+  return {
+    width,
+    height,
+    getArea: () => width * height,
+  };
 }
 
 
@@ -35,8 +39,8 @@ function Rectangle(/* width, height */) {
  *    [1,2,3]   =>  '[1,2,3]'
  *    { width: 10, height : 20 } => '{"height":10,"width":20}'
  */
-function getJSON(/* obj */) {
-  throw new Error('Not implemented');
+function getJSON(obj) {
+  return JSON.stringify(obj);
 }
 
 
@@ -51,8 +55,10 @@ function getJSON(/* obj */) {
  *    const r = fromJSON(Circle.prototype, '{"radius":10}');
  *
  */
-function fromJSON(/* proto, json */) {
-  throw new Error('Not implemented');
+function fromJSON(proto, json) {
+  const obj = JSON.parse(json);
+  Object.setPrototypeOf(obj, proto);
+  return obj;
 }
 
 
@@ -110,33 +116,120 @@ function fromJSON(/* proto, json */) {
  *  For more examples see unit tests.
  */
 
+function twiceError() {
+  throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+}
+
+function orderError() {
+  throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+}
+
+class BaseSelector {
+  constructor() {
+    this.selector = '';
+    this.hasElement = false;
+    this.hasId = false;
+    this.hasPseudoElement = false;
+    this.position = 0;
+  }
+
+  element(value) {
+    if (this.hasElement) twiceError();
+    if (this.position !== 0) orderError();
+    this.selector += `${value}`;
+    this.hasElement = true;
+    this.position = 1;
+    return this;
+  }
+
+  id(value) {
+    if (this.hasId) twiceError();
+    if (this.position > 1) orderError();
+    this.selector += `#${value}`;
+    this.hasId = true;
+    this.position = 2;
+    return this;
+  }
+
+  class(value) {
+    if (this.position > 3) orderError();
+    this.selector += `.${value}`;
+    this.position = 3;
+    return this;
+  }
+
+  attr(value) {
+    if (this.position > 4) orderError();
+    this.selector += `[${value}]`;
+    this.position = 4;
+    return this;
+  }
+
+  pseudoClass(value) {
+    if (this.position > 5) orderError();
+    this.selector += `:${value}`;
+    this.position = 5;
+    return this;
+  }
+
+  pseudoElement(value) {
+    if (this.hasPseudoElement) twiceError();
+    this.selector += `::${value}`;
+    this.hasPseudoElement = true;
+    this.position = 6;
+    return this;
+  }
+
+  stringify() {
+    return this.selector;
+  }
+}
+
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  element(value) {
+    if ('selector' in this) {
+      return this.element(value);
+    }
+    return new BaseSelector().element(value);
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    if ('selector' in this) {
+      return this.id(value);
+    }
+    return new BaseSelector().id(value);
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    if ('selector' in this) {
+      return this.class(value);
+    }
+    return new BaseSelector().class(value);
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    if ('selector' in this) {
+      return this.attr(value);
+    }
+    return new BaseSelector().attr(value);
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    if ('selector' in this) {
+      return this.pseudoClass(value);
+    }
+    return new BaseSelector().pseudoClass(value);
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    if ('selector' in this) {
+      return this.pseudoElement(value);
+    }
+    return new BaseSelector().pseudoElement(value);
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  combine(selector1, combinator, selector2) {
+    return new BaseSelector().element(`${selector1.stringify()} ${combinator} ${selector2.stringify()}`);
   },
 };
 
