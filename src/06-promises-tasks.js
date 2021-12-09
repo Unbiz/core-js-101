@@ -28,8 +28,18 @@
  *      .catch((error) => console.log(error.message)) // 'Error: Wrong parameter is passed!
  *                                                    //  Ask her again.';
  */
-function willYouMarryMe(/* isPositiveAnswer */) {
-  throw new Error('Not implemented');
+function willYouMarryMe(isPositiveAnswer) {
+  return new Promise((res, rej) => {
+    if (isPositiveAnswer === true) {
+      res('Hooray!!! She said "Yes"!');
+    }
+    if (isPositiveAnswer === false) {
+      res('Oh no, she said "No".');
+    }
+    if (isPositiveAnswer !== true && isPositiveAnswer !== false) {
+      rej(new Error('Wrong parameter is passed! Ask her again.'));
+    }
+  });
 }
 
 
@@ -48,8 +58,8 @@ function willYouMarryMe(/* isPositiveAnswer */) {
  *    })
  *
  */
-function processAllPromises(/* array */) {
-  throw new Error('Not implemented');
+function processAllPromises(array) {
+  return new Promise((res) => res(Promise.all(array)));
 }
 
 /**
@@ -71,8 +81,8 @@ function processAllPromises(/* array */) {
  *    })
  *
  */
-function getFastestPromise(/* array */) {
-  throw new Error('Not implemented');
+function getFastestPromise(array) {
+  return new Promise((res) => res(Promise.race(array)));
 }
 
 /**
@@ -92,9 +102,59 @@ function getFastestPromise(/* array */) {
  *    });
  *
  */
-function chainPromises(/* array, action */) {
-  throw new Error('Not implemented');
+async function chainPromises(array, action) {
+  return new Promise((res) => {
+    let result = '';
+    array.forEach((item, i) => {
+      item.then((el) => {
+        if (i === 0) {
+          if (typeof el === 'number') result = 0;
+        }
+        result = action(result, el);
+        if (i === array.length - 1) {
+          console.log('aaaa', result);
+          res(result);
+        }
+      });
+    });
+  }).catch((er) => new Error(er));
 }
+
+
+// let result = '';
+// // eslint-disable-next-line no-restricted-syntax
+// for (const item of array) {
+//   const temp = result;
+//   // eslint-disable-next-line no-loop-func
+//   item.then((res) => {
+//     result = action(temp, res);
+//   });
+// }
+
+
+// const result = array.reduce(async (acc, item) => {
+//   let val = '';
+//   await item.then(async (r) => {
+//     val = action(acc, r);
+//   });
+//   console.log('mmm', val);
+//   return val;
+// }, '');
+// console.log('zzzz', result);
+// for (item in array) {
+//   if (Object.prototype.hasOwnProperty.call(array, item)) {
+//     const temp = result;
+//     result += item.then((res) => action(temp, res));
+//   }
+// }
+
+
+// let xx = '';
+// await result.then(async (e) => {
+//   xx = await e;
+// });
+// console.log('aaa', xx);
+// return new Promise((res) => res(xx));
 
 module.exports = {
   willYouMarryMe,
