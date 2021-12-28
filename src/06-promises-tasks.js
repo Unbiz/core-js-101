@@ -102,22 +102,23 @@ function getFastestPromise(array) {
  *    });
  *
  */
-async function chainPromises(array, action) {
-  return new Promise((res) => {
-    let result = '';
-    array.forEach((item, i) => {
-      item.then((el) => {
-        if (i === 0) {
-          if (typeof el === 'number') result = 0;
-        }
-        result = action(result, el);
-        if (i === array.length - 1) {
-          console.log('aaaa', result);
-          res(result);
-        }
-      });
-    });
-  }).catch((er) => new Error(er));
+function chainPromises(/* array, action */) {
+  // return new Promise((res) => {
+  //   let result = '';
+  //   array.forEach((item, i) => {
+  //     item.then((el) => {
+  //       if (i === 0) {
+  //         if (typeof el === 'number') result = 0;
+  //       }
+  //       result = action(result, el);
+  //       if (i === array.length - 1) {
+  //         console.log('aaaa', result);
+  //         res(result);
+  //       }
+  //     });
+  //   });
+  // }).catch((er) => new Error(er));
+  throw new Error('Not implemented');
 }
 
 
