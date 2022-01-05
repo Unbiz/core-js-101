@@ -107,70 +107,15 @@ function chainPromises(array, action) {
     let result = '';
     array.forEach((item, i) => {
       item.then((el) => {
-        if (i === 0) {
-          if (typeof el === 'number') result = 0;
-        }
         result = action(result, el);
         if (i === array.length - 1) {
-          res(result.trim());
+          if (typeof result === 'string') res(result.trim());
+          res(result);
         }
-      }).catch((er) => new Error(er));
+      }, (er) => new Error(er));
     });
   });
 }
-
-// time
-// return new Promise((res) => {
-//   let result = '';
-//   array.forEach((item, i) => {
-//     item.then((el) => {
-//       if (i === 0) {
-//         if (typeof el === 'number') result = 0;
-//       }
-//       result = action(result, el);
-//       if (i === array.length - 1) {
-//         console.log('dd', result);
-//         res(result.trim());
-//       }
-//     }).catch((er) => new Error(er));
-//   });
-// });
-
-
-// let result = '';
-// // eslint-disable-next-line no-restricted-syntax
-// for (const item of array) {
-//   const temp = result;
-//   // eslint-disable-next-line no-loop-func
-//   item.then((res) => {
-//     result = action(temp, res);
-//   });
-// }
-
-
-// const result = array.reduce(async (acc, item) => {
-//   let val = '';
-//   await item.then(async (r) => {
-//     val = action(acc, r);
-//   });
-//   console.log('mmm', val);
-//   return val;
-// }, '');
-// console.log('zzzz', result);
-// for (item in array) {
-//   if (Object.prototype.hasOwnProperty.call(array, item)) {
-//     const temp = result;
-//     result += item.then((res) => action(temp, res));
-//   }
-// }
-
-
-// let xx = '';
-// await result.then(async (e) => {
-//   xx = await e;
-// });
-// console.log('aaa', xx);
-// return new Promise((res) => res(xx));
 
 module.exports = {
   willYouMarryMe,
